@@ -4,16 +4,26 @@ import { Preloader } from '../ui/preloader';
 import { OrderInfoUI } from '../ui/order-info';
 import { TIngredient } from '@utils-types';
 import { useDispatch, useSelector } from '../../services/store';
-import { selectIngredients, selectFeedOrders } from '@selectors';
+import {
+  selectIngredients,
+  selectFeedOrders,
+  selectUserOrders,
+  selectOrderModalData
+} from '@selectors';
 import { getOrderByNumber } from '../../services/slices/orderSlice';
 
 export const OrderInfo: FC = () => {
   const { number } = useParams<{ number: string }>();
   const dispatch = useDispatch();
   const ingredients = useSelector(selectIngredients);
-  const orders = useSelector(selectFeedOrders);
+  const feedOrders = useSelector(selectFeedOrders);
+  const userOrders = useSelector(selectUserOrders);
+  const orderFromModal = useSelector(selectOrderModalData);
 
-  const orderData = orders.find((order) => order.number === Number(number));
+  const orderData =
+    feedOrders.find((order) => order.number === Number(number)) ||
+    userOrders.find((order) => order.number === Number(number)) ||
+    orderFromModal;
 
   useEffect(() => {
     if (!orderData && number) {

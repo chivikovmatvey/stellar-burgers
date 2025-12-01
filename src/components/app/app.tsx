@@ -1,4 +1,10 @@
-import { Routes, Route, useLocation, useNavigate } from 'react-router-dom';
+import {
+  Routes,
+  Route,
+  useLocation,
+  useNavigate,
+  useParams
+} from 'react-router-dom';
 import {
   ConstructorPage,
   Feed,
@@ -15,9 +21,19 @@ import styles from './app.module.css';
 
 import { AppHeader, IngredientDetails, Modal, OrderInfo } from '@components';
 import { ProtectedRoute } from '../protected-route';
-import { useEffect } from 'react';
+import { useEffect, FC } from 'react';
 import { useDispatch } from '../../services/store';
 import { checkUserAuth } from '../../services/slices/userSlice';
+import { fetchIngredients } from '../../services/slices/ingredientsSlice';
+
+const OrderInfoModal: FC<{ onClose: () => void }> = ({ onClose }) => {
+  const { number } = useParams<{ number: string }>();
+  return (
+    <Modal title={`#${number}`} onClose={onClose}>
+      <OrderInfo />
+    </Modal>
+  );
+};
 
 const App = () => {
   const location = useLocation();
@@ -27,6 +43,7 @@ const App = () => {
 
   useEffect(() => {
     dispatch(checkUserAuth());
+    dispatch(fetchIngredients());
   }, [dispatch]);
 
   const handleModalClose = () => {
@@ -112,19 +129,13 @@ const App = () => {
           />
           <Route
             path='/feed/:number'
-            element={
-              <Modal title='' onClose={handleModalClose}>
-                <OrderInfo />
-              </Modal>
-            }
+            element={<OrderInfoModal onClose={handleModalClose} />}
           />
           <Route
             path='/profile/orders/:number'
             element={
               <ProtectedRoute>
-                <Modal title='' onClose={handleModalClose}>
-                  <OrderInfo />
-                </Modal>
+                <OrderInfoModal onClose={handleModalClose} />
               </ProtectedRoute>
             }
           />
