@@ -97,9 +97,18 @@ describe('constructorSlice', () => {
     });
 
     it('не должен удалять другие ингредиенты', () => {
-      const ingredient1: TConstructorIngredient = { ...mockIngredient, id: 'id-1' };
-      const ingredient2: TConstructorIngredient = { ...mockIngredient, id: 'id-2' };
-      const ingredient3: TConstructorIngredient = { ...mockIngredient, id: 'id-3' };
+      const ingredient1: TConstructorIngredient = {
+        ...mockIngredient,
+        id: 'id-1'
+      };
+      const ingredient2: TConstructorIngredient = {
+        ...mockIngredient,
+        id: 'id-2'
+      };
+      const ingredient3: TConstructorIngredient = {
+        ...mockIngredient,
+        id: 'id-3'
+      };
 
       const stateWithIngredients = {
         ...initialState,
@@ -109,24 +118,39 @@ describe('constructorSlice', () => {
       const state = reducer(stateWithIngredients, removeIngredient('id-2'));
 
       expect(state.ingredients).toHaveLength(2);
-      expect(state.ingredients.find(i => i.id === 'id-1')).toBeDefined();
-      expect(state.ingredients.find(i => i.id === 'id-3')).toBeDefined();
-      expect(state.ingredients.find(i => i.id === 'id-2')).toBeUndefined();
+      expect(state.ingredients.find((i) => i.id === 'id-1')).toBeDefined();
+      expect(state.ingredients.find((i) => i.id === 'id-3')).toBeDefined();
+      expect(state.ingredients.find((i) => i.id === 'id-2')).toBeUndefined();
     });
   });
 
   describe('moveIngredient', () => {
     it('должен переместить ингредиент вверх', () => {
-      const ingredient1: TConstructorIngredient = { ...mockIngredient, id: 'id-1', name: 'Первый' };
-      const ingredient2: TConstructorIngredient = { ...mockIngredient, id: 'id-2', name: 'Второй' };
-      const ingredient3: TConstructorIngredient = { ...mockIngredient, id: 'id-3', name: 'Третий' };
+      const ingredient1: TConstructorIngredient = {
+        ...mockIngredient,
+        id: 'id-1',
+        name: 'Первый'
+      };
+      const ingredient2: TConstructorIngredient = {
+        ...mockIngredient,
+        id: 'id-2',
+        name: 'Второй'
+      };
+      const ingredient3: TConstructorIngredient = {
+        ...mockIngredient,
+        id: 'id-3',
+        name: 'Третий'
+      };
 
       const stateWithIngredients = {
         ...initialState,
         ingredients: [ingredient1, ingredient2, ingredient3]
       };
 
-      const state = reducer(stateWithIngredients, moveIngredient({ fromIndex: 2, toIndex: 0 }));
+      const state = reducer(
+        stateWithIngredients,
+        moveIngredient({ fromIndex: 2, toIndex: 0 })
+      );
 
       expect(state.ingredients[0].name).toBe('Третий');
       expect(state.ingredients[1].name).toBe('Первый');
@@ -134,16 +158,31 @@ describe('constructorSlice', () => {
     });
 
     it('должен переместить ингредиент вниз', () => {
-      const ingredient1: TConstructorIngredient = { ...mockIngredient, id: 'id-1', name: 'Первый' };
-      const ingredient2: TConstructorIngredient = { ...mockIngredient, id: 'id-2', name: 'Второй' };
-      const ingredient3: TConstructorIngredient = { ...mockIngredient, id: 'id-3', name: 'Третий' };
+      const ingredient1: TConstructorIngredient = {
+        ...mockIngredient,
+        id: 'id-1',
+        name: 'Первый'
+      };
+      const ingredient2: TConstructorIngredient = {
+        ...mockIngredient,
+        id: 'id-2',
+        name: 'Второй'
+      };
+      const ingredient3: TConstructorIngredient = {
+        ...mockIngredient,
+        id: 'id-3',
+        name: 'Третий'
+      };
 
       const stateWithIngredients = {
         ...initialState,
         ingredients: [ingredient1, ingredient2, ingredient3]
       };
 
-      const state = reducer(stateWithIngredients, moveIngredient({ fromIndex: 0, toIndex: 2 }));
+      const state = reducer(
+        stateWithIngredients,
+        moveIngredient({ fromIndex: 0, toIndex: 2 })
+      );
 
       expect(state.ingredients[0].name).toBe('Второй');
       expect(state.ingredients[1].name).toBe('Третий');

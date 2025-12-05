@@ -19,6 +19,8 @@ describe('Burger Constructor', () => {
 
     cy.visit('/');
     cy.wait('@getIngredients');
+
+    cy.get('[data-cy="constructor"]').as('constructor');
   });
 
   afterEach(() => {
@@ -33,8 +35,10 @@ describe('Burger Constructor', () => {
         .find('button')
         .click();
 
-      cy.contains('Краторная булка N-200i (верх)').should('exist');
-      cy.contains('Краторная булка N-200i (низ)').should('exist');
+      cy.get('@constructor').within(() => {
+        cy.get('[data-cy="constructor-bun-top"]').should('contain', 'Краторная булка N-200i (верх)');
+        cy.get('[data-cy="constructor-bun-bottom"]').should('contain', 'Краторная булка N-200i (низ)');
+      });
     });
 
     it('должно добавить начинку в конструктор', () => {
@@ -43,8 +47,9 @@ describe('Burger Constructor', () => {
         .find('button')
         .click();
 
-      cy.get('.constructor_elements__wu9yT')
-        .should('exist');
+      cy.get('@constructor').within(() => {
+        cy.get('[data-cy="constructor-ingredients"]').should('contain', 'Биокотлета из марсианской Магнолии');
+      });
     });
 
     it('должно добавить несколько ингредиентов в конструктор', () => {
@@ -63,8 +68,12 @@ describe('Burger Constructor', () => {
         .find('button')
         .click();
 
-      cy.contains('Краторная булка N-200i (верх)').should('exist');
-      cy.contains('Краторная булка N-200i (низ)').should('exist');
+      cy.get('@constructor').within(() => {
+        cy.get('[data-cy="constructor-bun-top"]').should('contain', 'Краторная булка N-200i (верх)');
+        cy.get('[data-cy="constructor-bun-bottom"]').should('contain', 'Краторная булка N-200i (низ)');
+        cy.get('[data-cy="constructor-ingredients"]').should('contain', 'Биокотлета из марсианской Магнолии');
+        cy.get('[data-cy="constructor-ingredients"]').should('contain', 'Соус Spicy-X');
+      });
     });
   });
 
@@ -72,28 +81,30 @@ describe('Burger Constructor', () => {
     it('должно открыть модальное окно ингредиента при клике', () => {
       cy.contains('Краторная булка N-200i').click();
 
-      cy.get('[class^="modal_modal"]').should('exist');
-      cy.contains('Детали ингредиента').should('exist');
+      cy.get('[data-cy="modal"]').as('modal').should('be.visible');
 
-      cy.contains('Краторная булка N-200i').should('exist');
+      cy.get('@modal').within(() => {
+        cy.contains('Детали ингредиента').should('be.visible');
+        cy.get('[data-cy="modal-content"]').should('contain', 'Краторная булка N-200i');
+      });
     });
 
     it('должно закрыть модальное окно при клике на крестик', () => {
       cy.contains('Краторная булка N-200i').click();
-      cy.get('[class^="modal_modal"]').should('exist');
+      cy.get('[data-cy="modal"]').as('modal').should('be.visible');
 
-      cy.get('[class^="modal_button"]').click();
+      cy.get('[data-cy="modal-close-button"]').click();
 
-      cy.get('[class^="modal_modal"]').should('not.exist');
+      cy.get('[data-cy="modal"]').should('not.exist');
     });
 
     it('должно закрыть модальное окно при клике на оверлей', () => {
       cy.contains('Краторная булка N-200i').click();
-      cy.get('[class^="modal_modal"]').should('exist');
+      cy.get('[data-cy="modal"]').should('be.visible');
 
-      cy.get('[class^="modal-overlay_overlay"]').click({ force: true });
+      cy.get('[data-cy="modal-overlay"]').click({ force: true });
 
-      cy.get('[class^="modal_modal"]').should('not.exist');
+      cy.get('[data-cy="modal"]').should('not.exist');
     });
   });
 
@@ -114,12 +125,15 @@ describe('Burger Constructor', () => {
         .find('button')
         .click();
 
-      cy.contains('Оформить заказ').click();
+      cy.get('[data-cy="order-button"]').click();
 
       cy.wait('@createOrder');
 
-      cy.get('[class^="modal_modal"]').should('exist');
-      cy.contains('12345').should('exist');
+      cy.get('[data-cy="modal"]').as('orderModal').should('be.visible');
+
+      cy.get('@orderModal').within(() => {
+        cy.get('[data-cy="order-number"]').should('contain', '12345');
+      });
     });
 
     it('должно очистить конструктор после успешного оформления заказа', () => {
@@ -133,15 +147,17 @@ describe('Burger Constructor', () => {
         .find('button')
         .click();
 
-      cy.contains('Оформить заказ').click();
+      cy.get('[data-cy="order-button"]').click();
       cy.wait('@createOrder');
 
-      cy.get('[class^="modal_button"]').click();
+      cy.get('[data-cy="modal-close-button"]').click();
 
-      cy.get('[class^="modal_modal"]').should('not.exist');
+      cy.get('[data-cy="modal"]').should('not.exist');
 
-      cy.contains('Выберите булки').should('exist');
-      cy.contains('Выберите начинку').should('exist');
+      cy.get('@constructor').within(() => {
+        cy.get('[data-cy="constructor-bun-top-empty"]').should('contain', 'Выберите булки');
+        cy.get('[data-cy="constructor-ingredients-empty"]').should('contain', 'Выберите начинку');
+      });
     });
   });
 });
